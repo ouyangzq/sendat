@@ -19,6 +19,13 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <iostream>
+#include <fstream>
+using namespace std;
+#include <stdio.h>
+#include <io.h>
+
+
 #define MAX_PORTS	4
 
 /*this array hold information about each port we have opened */
@@ -271,7 +278,6 @@ int serial_init(int port, int spd, int databits, int parity,
 int serial_write(int fd, void *src, int len)
 {
     int ret = write(fd, src, len);
-	
     if (len != ret) {
 		perror("oh, write serial failed!");
 		return -1;
@@ -339,26 +345,32 @@ int serial_recv(int fd,char *rbuf,int rbuf_len, int timeout)
 } 
 
 
-
-
-
-
-
+int FileExist(const char* filename)
+{
+    if (filename && access(filename, F_OK) == 0) {
+        return 1;
+    }
+    return 0;
+}
 
 
 int main(int argc, char **argv)
 {
-
 	int port= 0;
 	sscanf(argv[1], "%d", &port);
+
+	if(FileExist(ports[port].name)==0)
+	{
+		printf("AT ERROR absent.\n");
+   		return 0;
+	}
+
 	char *message= argv[2];
 	char *nty= "\r";
     char *send= strcat(message,nty);
-
 	char buff[512];
 	//打开串口0，波特率为1500000
 	int fd = serial_def_init(port, 1500000);
-
 	if(fd < 0) return 0;
 
 	serial_write(fd,send, strlen(send));
