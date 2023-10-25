@@ -1,6 +1,8 @@
+/*
+** Soft:Daocaoren Name:马上有房 qq:168620188
+*/
 #ifndef _UART_H_
 #define _UART_H_
-
 #include <stdio.h>
 #include <assert.h> 
 #include <sys/time.h>
@@ -18,11 +20,7 @@
 #include <getopt.h>
 #include <signal.h>
 #include <stdlib.h>
-
-
-
 #define MAX_PORTS	4
-
 /*this array hold information about each port we have opened */
 struct PortInfo {
     char name[16];
@@ -33,36 +31,13 @@ int serial_init(int port, int spd, int databits, int parity, \
 int serial_write(int fd, void *src, int len);
 int serial_read(int fd, char *buf, int len);
 int serial_recv(int fd,char *rbuf,int rbuf_len, int timeout);
-
 //串口常用初始化接口
 #define serial_com_init(port, spd, databits, parity, stopbits)\
 		serial_init(port, spd, databits, parity, stopbits, 0, 0)
 //串口默认初始化接口
 #define serial_def_init(port, spd) serial_init(port, spd, 8, 'n', 1, 0, 1)
-
 #endif
 
-void usage()
-{
-	fprintf(stderr,
-		"usage: [options] send phoneNumber message\n"
-		"       [options] recv\n"
-		"       [options] delete msg_index | all\n"
-		"       [options] status\n"
-		"       [options] ussd code\n"
-		"       [options] at command\n"
-		"options:\n"
-		"\t-b <baudrate> (default: 115200)\n"
-		"\t-d <tty device> (default: /dev/ttyUSB0)\n"
-		"\t-D debug (for ussd and at)\n"
-		"\t-f <date/time format> (for sms/recv)\n"
-		"\t-j json output (for sms/recv)\n"
-		"\t-R use raw input (for ussd)\n"
-		"\t-r use raw output (for ussd and sms/recv)\n"
-		"\t-s <preferred storage> (for sms/recv/status)\n"
-		);
-	exit(2);
-}
 
 
 /*
