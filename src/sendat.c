@@ -20,6 +20,9 @@
 #include <getopt.h>
 #include <signal.h>
 #include <stdlib.h>
+// #include "pdu.h"
+
+
 #define MAX_PORTS	4
 /*this array hold information about each port we have opened */
 struct PortInfo {
@@ -338,6 +341,7 @@ static void timeout()
 	fprintf(stderr,"No response from modem.\n");
 	exit(2);
 }
+/*字符包含判断*/
 static int starts_with(const char* prefix, const char* str)
 {
 	while(*prefix)
@@ -349,8 +353,7 @@ static int starts_with(const char* prefix, const char* str)
 	}
 	return 1;
 }
-
-
+/*判断是否存在*/
 int FileExist(const char* filename)
 {
     if (filename && access(filename, F_OK) == 0) {
@@ -358,52 +361,90 @@ int FileExist(const char* filename)
     }
     return 0;
 }
+/*字符转小写*/
+char* str_tolower(const char* str)
+{
+	size_t len = strlen(str);
+    char *lower = calloc(len+1, sizeof(char));
+    for (size_t i = 0; i < len; ++i) {
+        lower[i] = tolower((unsigned char)str[i]);
+    }
+	/*free(upper);*/
+	return lower;
+}
+/*字符转大写*/
+char* str_toupper(const char* str)
+{
+	size_t len = strlen(str);
+    char *upper = calloc(len+1, sizeof(char));
+    for (size_t i = 0; i < len; ++i) {
+        upper[i] = toupper((unsigned char)str[i]);
+    }
+	/*free(upper);*/
+	return upper;
+}
+/*char*转char[]*/
+char strx_tostrarr(const char* str)
+{
+	return 0;
+}
+
 
 int main(int argc, char **argv)
 {
-
-
+	if(argc<3)
+	{
+		printf("ERROR demo: sendat 2 'ATI'\n");	
+		exit(1);
+		return 0;
+	}
 	int debug = 1;
 	int port= 0;
 	sscanf(argv[1], "%d", &port);
-
 	if(FileExist(ports[port].name)==0)
 	{
 		printf("AT ERROR absent.\n");
    		return 0;
 	}
 	char *message= argv[2];
-	char *nty= "\r";
-    char *send= strcat(message,nty);
+	char *nty= "\r\n";
 	char buff[1024];
 	signal(SIGALRM,timeout);
+	alarm(2);
+	/*信号超时3秒自动退出*/
 	int fd = serial_def_init(port, 1500000);
 	if(fd < 0) return 0;
+	char *send= strcat(message,nty);
 	serial_write(fd,send, strlen(send));
 	while(1) {
 		int read = serial_read(fd, buff, sizeof(buff));
 		if(starts_with("OK", buff)) {
 			if (debug == 1)
 				printf("%s", buff);
+			close(fd);//关闭串口
 			exit(0);
 		}
 		if(starts_with("ERROR", buff)) {
 			if (debug == 1)
 				printf("%s", buff);
+			close(fd);//关闭串口
 			exit(1);
 		}
 		if(starts_with("COMMAND NOT SUPPORT", buff)) {
 			if (debug == 1)
 				printf("%s", buff);
+			close(fd);//关闭串口
 			exit(1);
 		}
 		if(starts_with("+CME ERROR", buff)) {
 			if (debug == 1)
 				printf("%s", buff);
+			close(fd);//关闭串口
 			exit(1);
 		}
 		printf("%s", buff);
 	}
-	close(fd);//关闭串口
+
+	exit(1);
 	return 0;
 }
