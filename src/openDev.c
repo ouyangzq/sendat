@@ -27,7 +27,6 @@ int OpenDev(char *Dev)
     } 
   else 
     {
-      printf("Open com success!\n");
       return fd;
     }
 } 
