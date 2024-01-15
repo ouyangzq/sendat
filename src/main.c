@@ -100,7 +100,7 @@ int main(int argc, char **argv) {
 	int fd = OpenDev(ports[port].name);
 	//打开串口 
 	if(fd>0) {
-		set_speed(fd,152000);
+		set_speed(fd,19200);
 		//设置波特率
 	} else {
 		printf("Can't Open Serial Port!\n");
