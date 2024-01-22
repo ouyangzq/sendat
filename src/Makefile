@@ -1,6 +1,6 @@
 all:sendat
  
-OBJS = sendat.o
+OBJS = main.o openDev.o
 
 sendat:$(OBJS)
 	$(CC) $(CFLAGS) -o $@ $(OBJS) -lpthread
